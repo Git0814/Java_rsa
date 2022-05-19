@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+    <script src="js/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jsencrypt/2.1.0/jsencrypt.min.js"></script>
+
+
+</head>
+<body>
+<div>
+    <form method="get" action="login">
+        输入要进行加密传输的文字：<input  id="text" type="text"  name="password"></br>
+        <input type="button" id="btn">提交</inputbutton>
+    </form>
+    <h3>生成的公钥为:</h3></br>
+    <p id="gongyao">1</p>
+    <h3>生成的密文为:</h3></br>
+    <p id = "miwen">  </p>
+</div>
+
+
+    <script>
+        var pbk;
+        //页面加载完自动触发   拿到公钥
+        window.onload=function(){
+
+            axios({
+                method:'post',
+                url:'http://localhost:8080/LogPage_war_exploded/login',
+                // 设置请求体
+            }).then(response =>{
+                console.log(response.request.response);
+                pbk = response.request.response;
+                document.getElementById("gongyao").innerHTML= pbk
+            });
+        }
+
+
+        // 按钮事件
+        var btn = document.getElementById("btn");
+         btn.onclick=function (){
+             var text = document.getElementById('text').value;
+             console.log(text);
+             //加密
+             var encrypt = new JSEncrypt();
+             //设置公钥
+             encrypt.setPublicKey(pbk);
+             //加密得到加密结果
+             var result = encrypt.encrypt(text);
+            document.getElementById("miwen").innerHTML=result
+
+             console.log(result);
+             axios({
+                 method:'get',
+                 url:'http://localhost:8080/LogPage_war_exploded/login',
+                 params: {
+                     pas: result
+                 }
+
+             });
+         }
+    </script>
+
+
+</body>
+</html>
